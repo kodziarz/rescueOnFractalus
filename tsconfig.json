@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        //"rootDir": "./ts/",
+        "outDir": "./dist/",
+        "noImplicitAny": true,
+        "module": "es6",
+        "target": "es6",
+        "jsx": "react",
+        "allowJs": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "moduleResolution": "node"
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "paneCanvasWidth": 1000,
+    "paneCanvasHeight": 500,
+    "maxFPS": 60,
+    "initialVelocity": 10,
+    "moveFrequency": 20,
+    "baseRotationAngle": 0.5,
+    "controlKeys": {
+        "TURN_RIGHT": "ArrowRight",
+        "TURN_LEFT": "ArrowLeft",
+        "TURN_UP": "ArrowUp",
+        "TURN_DOWN": "ArrowDown",
+        "ACCELERATE": "a",
+        "SLOW_DOWN": "z"
+    },
+    "verticalDensity": 1
+}
