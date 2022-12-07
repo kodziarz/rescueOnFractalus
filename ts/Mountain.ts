@@ -20,6 +20,8 @@ export default class Mountain implements Observable {
     /**Faces of mountain. They contain peak and end points of two neighbour edges.*/
     private faces: Face[];
 
+    private tmp: number = 0;
+
     /**
      * Creates new Mountain.
      * @param peak Peak {@link Point~Pont} of the mountain.
@@ -65,22 +67,8 @@ export default class Mountain implements Observable {
         // get proper edges
         // let edgesToProject = [...this.edges.map((edge) => { return edge.copy(); })];
         let edgesToProject = new Set<Edge>();
-        // this.faces.forEach((face, index) => {
-        //     if (face.isFrontFacing()) {
-        //         let earlierIndex = index > 0 ? index - 1 : this.edges.length - 1;
-        //         let firstEdge = this.edges[index].copy();
-        //         let secondEdge = this.edges[earlierIndex].copy();
-        //         edgesToProject.add(firstEdge);
-        //         edgesToProject.add(secondEdge);
-        //         let backgroundPath = new Path();
-        //         backgroundPath.points.push(...firstEdge.points);
-        //         backgroundPath.points.push(...secondEdge.points.reverse());
-        //         backgroundPaths.push(backgroundPath);
-        //     }
-        // });
 
 
-        // próba poprawki czy coś
         let firstEdge = this.edges[0].copy();
         let secondEdge = this.edges[this.edges.length - 1].copy();
 
@@ -88,6 +76,9 @@ export default class Mountain implements Observable {
         secondEdge.points = secondEdge.points.filter((point) => { return fieldOfView.contains(point); });
 
         let isFacingCount = 0;
+        if (this.tmp % 100 == 1) console.log("this.faces: ", this.faces.map((face) => { return face.copy() }));
+        this.tmp++;
+
         this.faces.forEach((face, index) => {
             if (face.isFrontFacing()) {
                 isFacingCount++;
@@ -104,7 +95,7 @@ export default class Mountain implements Observable {
                 firstEdge.points = firstEdge.points.filter((point) => { return fieldOfView.contains(point); });
             }
         });
-        console.log("isFacingCount: ", isFacingCount);
+        //console.log("isFacingCount: ", isFacingCount);
 
         backgroundPaths = backgroundPaths.filter((backgroundPath) => { return backgroundPath.points.length > 0; });
 
@@ -126,20 +117,27 @@ export default class Mountain implements Observable {
 
     translate(vector: Point | Vector): void {
         if (vector instanceof Point) {
-            this.peak = this.peak.add(vector);
+            this.peak = this.peak.add(vector)
             this.edges.forEach((edge) => {
                 edge.points.forEach((point, index, points) => {
-                    points[index] = point.add(vector);
+                    if (index != 0)
+                        points[index] = point.add(vector);
                 });
+                // for (let i = 1; i < this.edges.length; i++) {
+                //     edge.points[i] = edge.points[i].add(vector);
+                // }
             });
-            this.faces.forEach((face) => { });
+            this.faces.forEach((face) => { face.adjustToNewVerticesValues() });
         } else { //vector instanceof Vector
             this.peak = this.peak.add(vector);
-            this.edges.forEach((edge) => {
+            this.edges.forEach((edge, i) => {
                 edge.points.forEach((point, index, points) => {
-                    points[index] = point.add(vector);
+                    if (index != 0)
+                        points[index] = point.add(vector);
                 });
             });
+            this.faces
+            this.faces.forEach((face) => { face.adjustToNewVerticesValues() });
         }
     }
 

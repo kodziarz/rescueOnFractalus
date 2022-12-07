@@ -1,3 +1,4 @@
+import Mountain from "./Mountain";
 import Point from "./Point";
 import Vector from "./Vector";
 
@@ -64,5 +65,13 @@ export default class Face {
         this.normal.initialPoint = this.middle;
         this.normal.terminalPoint = this.normal.terminalPoint.rotate(angleAroundX, angleAroundY, angleAroundZ);
         this.normal.coordinates = this.normal.terminalPoint.add(this.normal.initialPoint.negate());
+    }
+
+    copy(){
+        return new Face(
+            this.vertexA.copy(),
+            this.vertexB.copy(),
+            this.vertexC.copy()
+            )
     }
 }
