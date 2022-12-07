@@ -56,6 +56,11 @@ export default class Point {
         ));
     }
 
+    /** @returns New point with all coordinates multiplied by -1. */
+    negate() {
+        return new Point(-this.x, -this.y, -this.z);
+    }
+
     /**
      * Returns new point rotated around center of coordinate system.
      * @param angleAroundX Angle (in radians) through whitch the point is rotated around
@@ -86,7 +91,7 @@ export default class Point {
 
     /**@returns Deep copy of the object */
     copy(): Point {
-        return { ...this };
+        return new Point(this.x, this.y, this.z);
     }
 
 }

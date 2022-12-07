@@ -14,7 +14,7 @@ export default class Edge {
     /**@returns Deep copy of the object. */
     copy(): Edge {
         let edge = new Edge();
-        Object.assign(edge, { points: this.points.map((point) => { return point.copy(); }) });
+        edge.points = this.points.map((point) => { return point.copy(); });
         return edge;
     }
 
@@ -44,6 +44,9 @@ export default class Edge {
             lastPoint = newPoint;
             //todo
         }
+
+        console.log("generated Egde: ", edge);
+
 
         return edge;
     }

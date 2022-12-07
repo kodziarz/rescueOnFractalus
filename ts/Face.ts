@@ -16,16 +16,7 @@ export default class Face {
         this.vertexA = vertexA;
         this.vertexB = vertexB;
         this.vertexC = vertexC;
-        this.middle = new Point(
-            (this.vertexA.x + vertexB.x + vertexC.x) / 3,
-            (this.vertexA.y + vertexB.y + vertexC.y) / 3,
-            (this.vertexA.z + vertexB.z + vertexC.z) / 3
-        );
-
-        let vectorAB = vertexB.subtract(vertexA);
-        let vectorAC = vertexC.subtract(vertexA);
-        this.normal = vectorAB.crossProduct(vectorAC);
-        this.normal.initialPoint = this.middle;
+        this.adjustToNewVerticesValues();
     }
 
     /**
@@ -35,5 +26,43 @@ export default class Face {
     isFrontFacing() {
         let cameraToFaceVector = this.middle.subtract(new Point(0, 0, 0));
         return cameraToFaceVector.dotProduct(this.normal) < 0;
+    }
+
+    /**
+     * Recalculates inner values such as {@link normal} vector.
+     */
+    adjustToNewVerticesValues() {
+        this.middle = new Point(
+            (this.vertexA.x + this.vertexB.x + this.vertexC.x) / 3,
+            (this.vertexA.y + this.vertexB.y + this.vertexC.y) / 3,
+            (this.vertexA.z + this.vertexB.z + this.vertexC.z) / 3
+        );
+
+        let vectorAB = this.vertexB.subtract(this.vertexA);
+        let vectorAC = this.vertexC.subtract(this.vertexA);
+        this.normal = vectorAB.crossProduct(vectorAC);
+        this.normal.initialPoint = this.middle;
+    }
+
+    translate(vector: Point | Vector) {
+        if (vector instanceof Point) {
+            this.middle = this.middle.add(vector);
+            this.normal.initialPoint = this.middle;
+            this.normal.terminalPoint = this.normal.initialPoint.add(this.normal.coordinates);
+        } else { //vector instanceof Vector
+            this.middle = this.middle.add(vector);
+            this.normal.initialPoint = this.middle;
+            this.normal.terminalPoint = this.normal.initialPoint.add(this.normal.coordinates);
+        }
+    }
+
+    rotate(angleAroundX: number, angleAroundY: number, angleAroundZ: number) {
+        this.vertexA = this.vertexA.rotate(angleAroundX, angleAroundY, angleAroundZ);
+        this.vertexB = this.vertexB.rotate(angleAroundX, angleAroundY, angleAroundZ);
+        this.vertexC = this.vertexC.rotate(angleAroundX, angleAroundY, angleAroundZ);
+        this.middle = this.middle.rotate(angleAroundX, angleAroundY, angleAroundZ);
+        this.normal.initialPoint = this.middle;
+        this.normal.terminalPoint = this.normal.terminalPoint.rotate(angleAroundX, angleAroundY, angleAroundZ);
+        this.normal.coordinates = this.normal.terminalPoint.add(this.normal.initialPoint.negate());
     }
 }

@@ -41,10 +41,10 @@ export default class Camera {
         this.middleX = canvas.width / 2;
         this.middleY = canvas.height / 2;
 
-        setInterval(() => {
-            console.log("rendered frames: ", this.renderedFramesInThisSecond);
-            this.renderedFramesInThisSecond = 0;
-        }, 1000);
+        // setInterval(() => {
+        //     console.log("rendered frames: ", this.renderedFramesInThisSecond);
+        //     this.renderedFramesInThisSecond = 0;
+        // }, 1000);
         this.renderFrame();
 
     }
@@ -72,8 +72,12 @@ export default class Camera {
         visible.forEach((observable) => {
             if (observable instanceof Mountain) {
                 let backgroundPaths = observable.renderPaths(this.fieldOfView);
+                if (this.renderedFramesInThisSecond < 1) console.log("receivedPaths: ", backgroundPaths);
 
-                backgroundPaths.forEach((backgroundPath) => {
+
+                backgroundPaths.forEach((backgroundPath, backgroundPathIndex) => {
+                    // console.log("background path before render: ", backgroundPath);
+
                     this.context.beginPath();
                     this.context.moveTo(
                         this.middleX + backgroundPath.points[0].x * this.middleX,
@@ -86,10 +90,14 @@ export default class Camera {
                         );
                     }
                     this.context.closePath();
-                    this.context.fillStyle = "#ff00ff";
+                    //let color = Math.floor(Math.random() * 256).toString(16);
+                    // this.context.fillStyle = "#" + color;
+                    this.context.fillStyle = "#8800" + (backgroundPathIndex * 64 + 50).toString(16);
+                    // console.log("colorString: ", "#8800" + (backgroundPathIndex * 64 + 50).toString(16));
+
                     this.context.strokeStyle = "#000000";
                     this.context.lineWidth = 2;
-                    this.context.fill();
+                    // this.context.fill();
                     this.context.stroke();
                 });
 
