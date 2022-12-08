@@ -1,4 +1,5 @@
 import Mountain from "./Mountain";
+import Path from "./Path";
 import Point from "./Point";
 import Vector from "./Vector";
 
@@ -26,7 +27,7 @@ export default class Face {
      */
     isFrontFacing() {
         let cameraToFaceVector = this.middle.subtract(new Point(0, 0, 0));
-        return cameraToFaceVector.dotProduct(this.normal) < 0;
+        return cameraToFaceVector.dotProduct(this.normal) > 0;
     }
 
     /**
@@ -67,11 +68,19 @@ export default class Face {
         this.normal.coordinates = this.normal.terminalPoint.add(this.normal.initialPoint.negate());
     }
 
-    copy(){
+    copy() {
         return new Face(
             this.vertexA.copy(),
             this.vertexB.copy(),
             this.vertexC.copy()
-            )
+        );
+    }
+
+    getNormalVectorPoints() {
+        return [this.normal.initialPoint.copy(), new Point(
+            this.normal.initialPoint.x + this.normal.coordinates.x / 10,
+            this.normal.initialPoint.y + this.normal.coordinates.y / 10,
+            this.normal.initialPoint.z + this.normal.coordinates.z / 10,
+        )];
     }
 }

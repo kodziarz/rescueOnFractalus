@@ -72,7 +72,10 @@ export default class Camera {
         visible.forEach((observable) => {
             if (observable instanceof Mountain) {
                 let backgroundPaths = observable.renderPaths(this.fieldOfView);
-                if (this.renderedFramesInThisSecond < 1) console.log("receivedPaths: ", backgroundPaths);
+                if (this.renderedFramesInThisSecond % 120 == 0) console.log("receivedPaths: ", backgroundPaths.map((path) => {
+                    path.points = path.points.map((point) => { return point.copy(); });
+                    return path;
+                }));
 
 
                 backgroundPaths.forEach((backgroundPath, backgroundPathIndex) => {

@@ -43,7 +43,7 @@ export default class Mountain implements Observable {
                 peak,
                 edge.points[edge.points.length - 1]);
         });
-        console.log("this.faces: ", this.faces);
+        //console.log("this.faces: ", this.faces);
 
     }
 
@@ -76,7 +76,7 @@ export default class Mountain implements Observable {
         secondEdge.points = secondEdge.points.filter((point) => { return fieldOfView.contains(point); });
 
         let isFacingCount = 0;
-        if (this.tmp % 100 == 1) console.log("this.faces: ", this.faces.map((face) => { return face.copy() }));
+        if (this.tmp % 100 == 1) console.log("this.faces: ", this.faces.map((face) => { return face.copy(); }));
         this.tmp++;
 
         this.faces.forEach((face, index) => {
@@ -90,7 +90,7 @@ export default class Mountain implements Observable {
                 backgroundPath.points.push(...firstEdge.points);
                 backgroundPath.points.push(...[...secondEdge.points].reverse());
                 backgroundPaths.push(backgroundPath);
-                secondEdge = firstEdge.copy();
+                secondEdge = firstEdge;
                 firstEdge = this.edges[index < this.edges.length - 1 ? index + 1 : this.edges.length - 1].copy();
                 firstEdge.points = firstEdge.points.filter((point) => { return fieldOfView.contains(point); });
             }
@@ -111,67 +111,87 @@ export default class Mountain implements Observable {
         });
 
 
+        // renderowanie wektorów
+        this.faces.forEach((face) => {
+            let vectorPoints = face.getNormalVectorPoints();
+            let path = new Path();
+            path.points.push(...vectorPoints);
+            path.points.forEach((point, index, points) => {
+                point.x /= point.z;
+                point.y /= point.z;
+                point.z = 1;
+            });
+            backgroundPaths.push(path);
+        });
 
         return backgroundPaths;
     }
 
     translate(vector: Point | Vector): void {
         if (vector instanceof Point) {
-            this.peak = this.peak.add(vector)
+            this.peak.move(vector);
+
+            // //if (this.edges[0].points[0] != this.peak) console.error("to nie jest to samo kurczę");
+            // if (this.tmp % 120 == 0) {
+            //     console.log("peak: ", this.peak.copy());
+            //     console.log("this.edges[0].points[0]: ", this.edges[0].points[0]);
+            // }
+
             this.edges.forEach((edge) => {
-                edge.points.forEach((point, index, points) => {
-                    if (index != 0)
-                        points[index] = point.add(vector);
-                });
-                // for (let i = 1; i < this.edges.length; i++) {
-                //     edge.points[i] = edge.points[i].add(vector);
-                // }
+                for (let i = 1; i < edge.points.length; i++) {
+                    edge.points[i].move(vector);
+                }
             });
-            this.faces.forEach((face) => { face.adjustToNewVerticesValues() });
+            this.faces.forEach((face) => { face.adjustToNewVerticesValues(); });
         } else { //vector instanceof Vector
-            this.peak = this.peak.add(vector);
-            this.edges.forEach((edge, i) => {
-                edge.points.forEach((point, index, points) => {
-                    if (index != 0)
-                        points[index] = point.add(vector);
-                });
+            this.peak.move(vector.coordinates);
+
+            // //if (this.edges[0].points[0] != this.peak) console.error("to nie jest to samo kurczę");
+            // if (this.tmp % 120 == 0) {
+            //     console.log("peak: ", this.peak.copy());
+            //     console.log("this.edges[0].points[0]: ", this.edges[0].points[0]);
+            // }
+
+            this.edges.forEach((edge) => {
+                for (let i = 1; i < edge.points.length; i++) {
+                    edge.points[i].move(vector.coordinates);
+                }
             });
-            this.faces
-            this.faces.forEach((face) => { face.adjustToNewVerticesValues() });
+            this.faces.forEach((face) => { face.adjustToNewVerticesValues(); });
         }
     }
 
     rotate(vector: Point | Vector, angle: number): void {
         if (vector instanceof Point) {
-            this.peak = this.peak.rotate(
+            this.peak.rotateDestructively(
                 vector.x * angle,
                 vector.y * angle,
                 vector.z * angle
             );
             this.edges.forEach((edge) => {
-                edge.points.forEach((point, index, points) => {
-                    points[index] = point.rotate(
+                for (let i = 1; i < edge.points.length; i++) {
+                    edge.points[i].rotateDestructively(
                         vector.x * angle,
                         vector.y * angle,
                         vector.z * angle
                     );
-                });
+                }
             });
             this.faces.forEach((face) => { face.adjustToNewVerticesValues(); });
         } else { //vector instanceof Vector
-            this.peak = this.peak.rotate(
+            this.peak.rotateDestructively(
                 vector.coordinates.x * angle,
                 vector.coordinates.y * angle,
                 vector.coordinates.z * angle
             );
             this.edges.forEach((edge) => {
-                edge.points.forEach((point, index, points) => {
-                    points[index] = point.rotate(
+                for (let i = 1; i < edge.points.length; i++) {
+                    edge.points[i].rotateDestructively(
                         vector.coordinates.x * angle,
                         vector.coordinates.y * angle,
                         vector.coordinates.z * angle
                     );
-                });
+                }
             });
             this.faces.forEach((face) => { face.adjustToNewVerticesValues(); });
         }
@@ -186,6 +206,9 @@ export default class Mountain implements Observable {
         let edge3 = Edge.createRandomEdge(peak, new Point(1, 1, -1));
         // edge3.points.push(peak, new Point(50, -60, 110));
 
+        if (peak != edge1.points[0]) console.error("zły początek krawędzi");
+        if (peak != edge2.points[0]) console.error("zły początek krawędzi");
+        if (peak != edge3.points[0]) console.error("zły początek krawędzi");
         return new Mountain(peak, [edge1, edge2, edge3]);
     }
 

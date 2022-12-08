@@ -42,6 +42,13 @@ export default class Point {
                 this.z + input.coordinates.z);
     }
 
+    /**Moves original point along vector coordinates passed in {@link Point}. */
+    move(input: Point) {
+        this.x += input.x;
+        this.y += input.y;
+        this.z += input.z;
+    }
+
     /**
      * Creates {@link Vector~Vector} as a subtraction between point on which the method is
      * invoked and given point.
@@ -87,6 +94,22 @@ export default class Point {
 
         }
         return result;
+    }
+
+    rotateDestructively(angleAroundX: number, angleAroundY: number, angleAroundZ: number) {
+        if (angleAroundX != 0) {
+            this.z = this.z * Math.cos(angleAroundX) - this.y * Math.sin(angleAroundX);
+            this.y = this.z * Math.sin(angleAroundX) + this.y * Math.cos(angleAroundX);
+        }
+        if (angleAroundY != 0) {
+            this.x = this.x * Math.cos(angleAroundY) - this.z * Math.sin(angleAroundY);
+            this.z = this.x * Math.sin(angleAroundY) + this.z * Math.cos(angleAroundY);
+        }
+        if (angleAroundZ != 0) {
+            this.y = this.y * Math.sin(angleAroundZ) + this.x * Math.cos(angleAroundZ);
+            this.x = this.y * Math.cos(angleAroundZ) - this.x * Math.sin(angleAroundZ);
+
+        }
     }
 
     /**@returns Deep copy of the object */
